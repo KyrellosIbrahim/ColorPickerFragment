@@ -20,6 +20,7 @@ import java.util.LinkedList;
 public class ColorListFragment extends Fragment {
     private ColorViewModel colorsModel;
     ListView listViewWidget;
+    ArrayAdapter<String> adapter;
 
     public ColorListFragment() {
         // Required empty public constructor
@@ -45,11 +46,16 @@ public class ColorListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         colorsModel = new ViewModelProvider(getActivity()).get(ColorViewModel.class);
+
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new LinkedList<>());
+        listViewWidget.setAdapter(adapter);
+
         colorsModel.getColors().observe(getViewLifecycleOwner(), new Observer<LinkedList<String>>() {
             @Override
             public void onChanged(LinkedList<String> strings) {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, colorsModel.getColors().getValue());
-                listViewWidget.setAdapter(adapter);
+                adapter.clear();
+                adapter.addAll(strings);
+                adapter.notifyDataSetChanged();
             }
         });
     }
